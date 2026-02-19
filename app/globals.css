@@ -10,7 +10,7 @@
 
 @layer utilities {
   .backdrop-blur-glass {
-    backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
   }
 }

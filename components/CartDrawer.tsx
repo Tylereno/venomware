@@ -68,6 +68,7 @@ export function CartDrawer() {
           <button
             onClick={toggleCart}
             className="p-2 hover:bg-white/10 rounded transition-colors"
+            aria-label="Close cart"
           >
             <X className="w-6 h-6" />
           </button>
@@ -108,6 +109,7 @@ export function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         className="p-2 hover:bg-white/10 transition-colors"
+                        aria-label="Decrease quantity"
                       >
                         <Minus className="w-4 h-4" />
                       </button>
@@ -117,6 +119,7 @@ export function CartDrawer() {
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         className="p-2 hover:bg-white/10 transition-colors"
+                        aria-label="Increase quantity"
                       >
                         <Plus className="w-4 h-4" />
                       </button>
@@ -125,6 +128,7 @@ export function CartDrawer() {
                     <button
                       onClick={() => removeItem(item.id)}
                       className="p-2 hover:bg-red-500/20 text-red-500 transition-colors"
+                      aria-label="Remove item"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
