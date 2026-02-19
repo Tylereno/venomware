@@ -93,31 +93,38 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="space-y-3">
-          <button
-            disabled={!availableProviders.includes('google')}
-            onClick={() => signIn('google', { callbackUrl: '/account' })}
-            className="w-full py-3 px-4 bg-gradient-to-r from-roseGold to-champagne text-background font-montserrat font-bold tracking-wide hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            {availableProviders.includes('google') ? 'Continue with Google' : 'Google login unavailable'}
-          </button>
-          <button
-            disabled={!availableProviders.includes('facebook')}
-            onClick={() => signIn('facebook', { callbackUrl: '/account' })}
-            className="w-full py-3 px-4 border border-roseGold/60 text-roseGold font-montserrat font-bold tracking-wide hover:bg-roseGold hover:text-background transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-roseGold"
-          >
-            {availableProviders.includes('facebook')
-              ? 'Continue with Facebook'
-              : 'Facebook login unavailable'}
-          </button>
-          <button
-            disabled={!availableProviders.includes('apple')}
-            onClick={() => signIn('apple', { callbackUrl: '/account' })}
-            className="w-full py-3 px-4 border border-white/40 text-white font-montserrat font-bold tracking-wide hover:bg-white hover:text-background transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-white"
-          >
-            {availableProviders.includes('apple') ? 'Continue with Apple' : 'Apple login unavailable'}
-          </button>
-        </div>
+        {(availableProviders.includes('google') ||
+          availableProviders.includes('facebook') ||
+          availableProviders.includes('apple')) && (
+          <div className="space-y-3">
+            {availableProviders.includes('google') && (
+              <button
+                onClick={() => signIn('google', { callbackUrl: '/account' })}
+                className="w-full py-3 px-4 bg-gradient-to-r from-roseGold to-champagne text-background font-montserrat font-bold tracking-wide hover:opacity-90 transition-opacity"
+              >
+                Continue with Google
+              </button>
+            )}
+
+            {availableProviders.includes('facebook') && (
+              <button
+                onClick={() => signIn('facebook', { callbackUrl: '/account' })}
+                className="w-full py-3 px-4 border border-roseGold/60 text-roseGold font-montserrat font-bold tracking-wide hover:bg-roseGold hover:text-background transition-colors"
+              >
+                Continue with Facebook
+              </button>
+            )}
+
+            {availableProviders.includes('apple') && (
+              <button
+                onClick={() => signIn('apple', { callbackUrl: '/account' })}
+                className="w-full py-3 px-4 border border-white/40 text-white font-montserrat font-bold tracking-wide hover:bg-white hover:text-background transition-colors"
+              >
+                Continue with Apple
+              </button>
+            )}
+          </div>
+        )}
 
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
