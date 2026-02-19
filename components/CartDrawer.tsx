@@ -5,10 +5,7 @@ import { formatPrice } from '@/lib/utils';
 import { createCheckout } from '@/lib/actions';
 import { X, Trash2, Plus, Minus, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { useEffect, useState } from 'react';
-import { addOrderHistory } from '@/lib/orderHistory';
-import { getSavedCheckoutEmail, saveCheckoutEmail } from '@/lib/customerPrefs';
-import Link from 'next/link';
+import { useState } from 'react';
 
 export function CartDrawer() {
   const { 
@@ -22,21 +19,9 @@ export function CartDrawer() {
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
-  const [customerEmail, setCustomerEmail] = useState('');
-
-  useEffect(() => {
-    const email = getSavedCheckoutEmail();
-    setCustomerEmail(email);
-  }, []);
 
   const handleCheckout = async () => {
     setCheckoutError(null);
-
-    const normalizedEmail = customerEmail.trim().toLowerCase();
-    if (!normalizedEmail || !normalizedEmail.includes('@')) {
-      setCheckoutError('Enter a valid email to save order history and receive updates.');
-      return;
-    }
 
     // Ensure every item has a Shopify variant ID before proceeding
     const missingVariant = items.find((item) => !item.shopifyVariantId);
@@ -49,28 +34,11 @@ export function CartDrawer() {
 
     setIsCheckingOut(true);
     try {
-      saveCheckoutEmail(normalizedEmail);
-
       const lineItems = items.map((item) => ({
         merchandiseId: item.shopifyVariantId,
         quantity: item.quantity,
       }));
       const checkoutUrl = await createCheckout(lineItems);
-
-      addOrderHistory({
-        id: crypto.randomUUID(),
-        createdAt: new Date().toISOString(),
-        total,
-        checkoutUrl,
-        items: items.map((item) => ({
-          id: item.id,
-          name: item.name,
-          variant: item.variant,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.images[0],
-        })),
-      });
 
       window.location.href = checkoutUrl;
     } catch (err) {
@@ -184,23 +152,14 @@ export function CartDrawer() {
                 {checkoutError}
               </p>
             )}
-            <div className="space-y-3">
-              <input
-                type="email"
-                value={customerEmail}
-                onChange={(event) => setCustomerEmail(event.target.value)}
-                placeholder="Email for order updates & history"
-                className="w-full bg-background/70 border border-roseGold/25 px-4 py-3 font-inter text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-roseGold/60"
-              />
-              <a
-                href="https://instagram.com/venomwear"
-                target="_blank"
-                rel="noreferrer noopener"
-                className="inline-block text-xs text-champagne hover:text-roseGold transition-colors font-inter"
-              >
-                Keep up with new drops on Instagram ↗
-              </a>
-            </div>
+            <a
+              href="https://instagram.com/venomwear"
+              target="_blank"
+              rel="noreferrer noopener"
+              className="block text-center text-xs text-champagne hover:text-roseGold transition-colors font-inter"
+            >
+              Keep up with new drops on Instagram ↗
+            </a>
             <button
               onClick={handleCheckout}
               disabled={isCheckingOut}
@@ -218,12 +177,6 @@ export function CartDrawer() {
             <p className="text-xs text-center text-white/60 font-inter">
               Secure checkout powered by Shopify
             </p>
-            <Link
-              href="/account"
-              className="block text-center text-xs text-roseGold hover:text-champagne transition-colors font-inter"
-            >
-              View recent checkouts
-            </Link>
           </div>
         )}
       </div>

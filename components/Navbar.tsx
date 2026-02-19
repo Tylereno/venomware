@@ -1,16 +1,14 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, Menu, X, User, LogOut } from 'lucide-react';
+import { ShoppingCart, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { useCartStore } from '@/lib/store';
 import { CartDrawer } from './CartDrawer';
-import { signIn, signOut, useSession } from 'next-auth/react';
 
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { toggleCart, getTotalItems } = useCartStore();
-  const { data: session } = useSession();
   const totalItems = getTotalItems();
 
   const navLinks = [
@@ -47,33 +45,6 @@ export function Navbar() {
 
             {/* Cart Button */}
             <div className="flex items-center space-x-4">
-              {session ? (
-                <>
-                  <Link
-                    href="/account"
-                    className="hidden md:flex items-center gap-2 text-sm font-inter uppercase tracking-wider hover:text-roseGold transition-colors"
-                  >
-                    <User className="w-4 h-4" />
-                    Account
-                  </Link>
-                  <button
-                    onClick={() => signOut({ callbackUrl: '/' })}
-                    className="hidden md:flex items-center gap-2 text-sm font-inter uppercase tracking-wider text-roseGold hover:text-champagne transition-colors"
-                    aria-label="Sign out"
-                  >
-                    <LogOut className="w-4 h-4" />
-                    Sign out
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => signIn(undefined, { callbackUrl: '/account' })}
-                  className="hidden md:inline-block text-sm font-inter uppercase tracking-wider text-roseGold hover:text-champagne transition-colors"
-                >
-                  Sign in
-                </button>
-              )}
-
               <button
                 onClick={toggleCart}
                 className="relative p-2 hover:bg-white/10 rounded transition-colors"
@@ -117,39 +88,6 @@ export function Navbar() {
                   {link.label}
                 </Link>
               ))}
-
-              <div className="pt-2 border-t border-roseGold/20 space-y-2">
-                {session ? (
-                  <>
-                    <Link
-                      href="/account"
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="block text-sm font-inter uppercase tracking-wider text-roseGold hover:text-champagne transition-colors py-2"
-                    >
-                      Account
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setMobileMenuOpen(false);
-                        signOut({ callbackUrl: '/' });
-                      }}
-                      className="block text-sm font-inter uppercase tracking-wider text-roseGold hover:text-champagne transition-colors py-2"
-                    >
-                      Sign out
-                    </button>
-                  </>
-                ) : (
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      signIn(undefined, { callbackUrl: '/account' });
-                    }}
-                    className="block text-sm font-inter uppercase tracking-wider text-roseGold hover:text-champagne transition-colors py-2"
-                  >
-                    Sign in
-                  </button>
-                )}
-              </div>
             </div>
           </div>
         )}

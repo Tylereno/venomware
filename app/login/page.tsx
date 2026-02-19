@@ -34,7 +34,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (status === 'authenticated') {
-      router.replace('/account');
+      router.replace('/');
     }
   }, [status, router]);
 
@@ -61,7 +61,7 @@ export default function LoginPage() {
     const response = await signIn('credentials', {
       email: email.trim(),
       password,
-      callbackUrl: '/account',
+      callbackUrl: '/',
       redirect: false,
     });
 
@@ -70,10 +70,10 @@ export default function LoginPage() {
     } else if (response?.ok) {
       setEmailStatus(
         mode === 'register'
-          ? 'Account ready — redirecting to your profile...'
-          : 'Login successful — redirecting to your profile...'
+          ? 'Account ready — redirecting...'
+          : 'Login successful — redirecting...'
       );
-      router.replace('/account');
+      router.replace('/');
     } else {
       setEmailStatus('Could not complete login. Please try again.');
     }
@@ -89,7 +89,7 @@ export default function LoginPage() {
             SIGN IN
           </h1>
           <p className="text-white/70 font-inter">
-            Continue with your preferred account to access profile and shopping history.
+            Continue with your preferred account for a faster checkout.
           </p>
         </div>
 
@@ -99,7 +99,7 @@ export default function LoginPage() {
           <div className="space-y-3">
             {availableProviders.includes('google') && (
               <button
-                onClick={() => signIn('google', { callbackUrl: '/account' })}
+                onClick={() => signIn('google', { callbackUrl: '/' })}
                 className="w-full py-3 px-4 bg-gradient-to-r from-roseGold to-champagne text-background font-montserrat font-bold tracking-wide hover:opacity-90 transition-opacity"
               >
                 Continue with Google
@@ -108,7 +108,7 @@ export default function LoginPage() {
 
             {availableProviders.includes('facebook') && (
               <button
-                onClick={() => signIn('facebook', { callbackUrl: '/account' })}
+                onClick={() => signIn('facebook', { callbackUrl: '/' })}
                 className="w-full py-3 px-4 border border-roseGold/60 text-roseGold font-montserrat font-bold tracking-wide hover:bg-roseGold hover:text-background transition-colors"
               >
                 Continue with Facebook
@@ -117,7 +117,7 @@ export default function LoginPage() {
 
             {availableProviders.includes('apple') && (
               <button
-                onClick={() => signIn('apple', { callbackUrl: '/account' })}
+                onClick={() => signIn('apple', { callbackUrl: '/' })}
                 className="w-full py-3 px-4 border border-white/40 text-white font-montserrat font-bold tracking-wide hover:bg-white hover:text-background transition-colors"
               >
                 Continue with Apple
@@ -178,7 +178,7 @@ export default function LoginPage() {
         )}
 
         <p className="text-center text-sm text-white/60 font-inter">
-          By signing in, you can track your checkout history on your profile.
+          Secure checkout and order emails are handled by Shopify.
         </p>
 
         {availableProviders.length === 0 && (
