@@ -2,6 +2,8 @@ import { notFound } from 'next/navigation';
 import { ProductCard } from '@/components/ProductCard';
 import { getProductsByCategory, type ProductCategory } from '@/lib/data';
 
+export const revalidate = 60; // ISR: revalidate every 60 seconds
+
 interface ShopPageProps {
   params: {
     category: string;
@@ -41,7 +43,7 @@ export function generateMetadata({ params }: ShopPageProps) {
   };
 }
 
-export default function ShopPage({ params }: ShopPageProps) {
+export default async function ShopPage({ params }: ShopPageProps) {
   const category = params.category as ProductCategory;
 
   // Validate category
@@ -49,7 +51,7 @@ export default function ShopPage({ params }: ShopPageProps) {
     notFound();
   }
 
-  const products = getProductsByCategory(category);
+  const products = await getProductsByCategory(category);
 
   return (
     <div className="min-h-screen py-12">

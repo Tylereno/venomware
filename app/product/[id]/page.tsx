@@ -1,8 +1,15 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
-import { getProductById } from '@/lib/data';
+import { getProductById, getAllProductHandles } from '@/lib/data';
 import { formatPrice } from '@/lib/utils';
 import { AddToCartButton } from '@/components/AddToCartButton';
+
+export const revalidate = 60; // ISR: revalidate every 60 seconds
+
+export async function generateStaticParams() {
+  const handles = await getAllProductHandles();
+  return handles.map((id) => ({ id }));
+}
 
 interface ProductPageProps {
   params: {
@@ -10,8 +17,8 @@ interface ProductPageProps {
   };
 }
 
-export function generateMetadata({ params }: ProductPageProps) {
-  const product = getProductById(params.id);
+export async function generateMetadata({ params }: ProductPageProps) {
+  const product = await getProductById(params.id);
   
   if (!product) {
     return {};
@@ -23,8 +30,8 @@ export function generateMetadata({ params }: ProductPageProps) {
   };
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
-  const product = getProductById(params.id);
+export default async function ProductPage({ params }: ProductPageProps) {
+  const product = await getProductById(params.id);
 
   if (!product) {
     notFound();

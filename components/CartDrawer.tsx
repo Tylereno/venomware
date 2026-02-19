@@ -2,8 +2,10 @@
 
 import { useCartStore } from '@/lib/store';
 import { formatPrice } from '@/lib/utils';
-import { X, Trash2, Plus, Minus } from 'lucide-react';
+import { createCheckout } from '@/lib/actions';
+import { X, Trash2, Plus, Minus, Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import { useState } from 'react';
 
 export function CartDrawer() {
   const { 
@@ -14,6 +16,37 @@ export function CartDrawer() {
     updateQuantity, 
     getTotalPrice 
   } = useCartStore();
+
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+
+  const handleCheckout = async () => {
+    setCheckoutError(null);
+
+    // Ensure every item has a Shopify variant ID before proceeding
+    const missingVariant = items.find((item) => !item.shopifyVariantId);
+    if (missingVariant) {
+      setCheckoutError(
+        'Checkout is not available yet — Shopify store not connected.'
+      );
+      return;
+    }
+
+    setIsCheckingOut(true);
+    try {
+      const lineItems = items.map((item) => ({
+        merchandiseId: item.shopifyVariantId,
+        quantity: item.quantity,
+      }));
+      const checkoutUrl = await createCheckout(lineItems);
+      window.location.href = checkoutUrl;
+    } catch (err) {
+      setCheckoutError(
+        err instanceof Error ? err.message : 'Checkout failed. Please try again.'
+      );
+      setIsCheckingOut(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -109,11 +142,27 @@ export function CartDrawer() {
               <span>TOTAL</span>
               <span>{formatPrice(total)}</span>
             </div>
-            <button className="w-full bg-white text-background py-4 font-montserrat font-black text-lg tracking-wider hover:bg-white/90 transition-colors">
-              CHECKOUT
+            {checkoutError && (
+              <p className="text-sm text-red-400 font-inter text-center">
+                {checkoutError}
+              </p>
+            )}
+            <button
+              onClick={handleCheckout}
+              disabled={isCheckingOut}
+              className="w-full bg-white text-background py-4 font-montserrat font-black text-lg tracking-wider hover:bg-white/90 transition-colors disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            >
+              {isCheckingOut ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                  REDIRECTING...
+                </>
+              ) : (
+                'CHECKOUT'
+              )}
             </button>
             <p className="text-xs text-center text-white/60 font-inter">
-              Secure checkout powered by Stripe
+              Secure checkout powered by Shopify
             </p>
           </div>
         )}
