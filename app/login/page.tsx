@@ -10,6 +10,7 @@ export default function LoginPage() {
   const router = useRouter();
   const [availableProviders, setAvailableProviders] = useState<string[]>([]);
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [emailStatus, setEmailStatus] = useState<string | null>(null);
   const [isSubmittingEmail, setIsSubmittingEmail] = useState(false);
 
@@ -37,11 +38,10 @@ export default function LoginPage() {
     }
   }, [status, router]);
 
-  const handleEmailSignIn = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const handleCredentialsAuth = async (mode: 'login' | 'register') => {
 
-    if (!availableProviders.includes('email')) {
-      setEmailStatus('Email sign-in is unavailable until SMTP is configured.');
+    if (!availableProviders.includes('credentials')) {
+      setEmailStatus('Email/password sign-in is currently unavailable.');
       return;
     }
 
@@ -50,19 +50,32 @@ export default function LoginPage() {
       return;
     }
 
+    if (password.length < 6) {
+      setEmailStatus('Password must be at least 6 characters.');
+      return;
+    }
+
     setIsSubmittingEmail(true);
     setEmailStatus(null);
 
-    const response = await signIn('email', {
+    const response = await signIn('credentials', {
       email: email.trim(),
+      password,
       callbackUrl: '/account',
       redirect: false,
     });
 
     if (response?.error) {
-      setEmailStatus('Could not send sign-in link. Please try again.');
+      setEmailStatus('Login failed. Check your email/password and try again.');
+    } else if (response?.ok) {
+      setEmailStatus(
+        mode === 'register'
+          ? 'Account ready — redirecting to your profile...'
+          : 'Login successful — redirecting to your profile...'
+      );
+      router.replace('/account');
     } else {
-      setEmailStatus('Check your inbox for your secure sign-in link.');
+      setEmailStatus('Could not complete login. Please try again.');
     }
 
     setIsSubmittingEmail(false);
@@ -115,7 +128,13 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <form className="space-y-3" onSubmit={handleEmailSignIn}>
+        <form
+          className="space-y-3"
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleCredentialsAuth('login');
+          }}
+        >
           <input
             type="email"
             value={email}
@@ -123,12 +142,27 @@ export default function LoginPage() {
             placeholder="Your email"
             className="w-full bg-background/70 border border-roseGold/25 px-4 py-3 font-inter text-white placeholder:text-white/40 focus:outline-none focus:border-roseGold/60"
           />
+          <input
+            type="password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            placeholder="Your password"
+            className="w-full bg-background/70 border border-roseGold/25 px-4 py-3 font-inter text-white placeholder:text-white/40 focus:outline-none focus:border-roseGold/60"
+          />
           <button
             type="submit"
-            disabled={!availableProviders.includes('email') || isSubmittingEmail}
+            disabled={!availableProviders.includes('credentials') || isSubmittingEmail}
             className="w-full py-3 px-4 bg-gradient-to-r from-roseGold to-champagne text-background font-montserrat font-bold tracking-wide hover:opacity-90 transition-opacity disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {isSubmittingEmail ? 'Sending link...' : 'Login / Register with Email'}
+            {isSubmittingEmail ? 'Processing...' : 'Login'}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleCredentialsAuth('register')}
+            disabled={!availableProviders.includes('credentials') || isSubmittingEmail}
+            className="w-full py-3 px-4 border border-roseGold/60 text-roseGold font-montserrat font-bold tracking-wide hover:bg-roseGold hover:text-background transition-colors disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-roseGold"
+          >
+            {isSubmittingEmail ? 'Processing...' : 'Register'}
           </button>
         </form>
 
@@ -142,7 +176,7 @@ export default function LoginPage() {
 
         {availableProviders.length === 0 && (
           <p className="text-center text-xs text-roseGold/90 font-inter">
-            Configure OAuth/SMTP credentials in .env.local to enable social login and email registration.
+            Configure OAuth credentials in .env.local to enable social login.
           </p>
         )}
 
