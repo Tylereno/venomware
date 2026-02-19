@@ -5,9 +5,9 @@ import { getProductsByCategory, type ProductCategory } from '@/lib/data';
 export const revalidate = 60; // ISR: revalidate every 60 seconds
 
 interface ShopPageProps {
-  params: {
+  params: Promise<{
     category: string;
-  };
+  }>;
 }
 
 const categoryTitles: Record<ProductCategory, string> = {
@@ -30,28 +30,30 @@ export async function generateStaticParams() {
   ];
 }
 
-export function generateMetadata({ params }: ShopPageProps) {
-  const category = params.category as ProductCategory;
+export async function generateMetadata({ params }: ShopPageProps) {
+  const { category } = await params;
+  const cat = category as ProductCategory;
   
-  if (!categoryTitles[category]) {
+  if (!categoryTitles[cat]) {
     return {};
   }
 
   return {
-    title: `${categoryTitles[category]} | VenomWare`,
-    description: categoryDescriptions[category],
+    title: `${categoryTitles[cat]} | VenomWare`,
+    description: categoryDescriptions[cat],
   };
 }
 
 export default async function ShopPage({ params }: ShopPageProps) {
-  const category = params.category as ProductCategory;
+  const { category } = await params;
+  const cat = category as ProductCategory;
 
   // Validate category
-  if (!categoryTitles[category]) {
+  if (!categoryTitles[cat]) {
     notFound();
   }
 
-  const products = await getProductsByCategory(category);
+  const products = await getProductsByCategory(cat);
 
   return (
     <div className="min-h-screen py-12">
@@ -59,10 +61,10 @@ export default async function ShopPage({ params }: ShopPageProps) {
         {/* Page Header */}
         <div className="text-center mb-12 space-y-4">
           <h1 className="text-5xl md:text-6xl font-montserrat font-black tracking-tight">
-            {categoryTitles[category]}
+            {categoryTitles[cat]}
           </h1>
           <p className="text-xl text-white/60 font-inter max-w-2xl mx-auto">
-            {categoryDescriptions[category]}
+            {categoryDescriptions[cat]}
           </p>
           <div className="h-1 w-24 bg-white mx-auto" />
         </div>
