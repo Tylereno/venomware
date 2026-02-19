@@ -153,7 +153,7 @@ export function CartDrawer() {
               </p>
             )}
             <a
-              href="https://instagram.com/venomwear"
+              href="https://instagram.com/venomwear_exotics"
               target="_blank"
               rel="noreferrer noopener"
               className="block text-center text-xs text-champagne hover:text-roseGold transition-colors font-inter"
