@@ -12,13 +12,13 @@ const SHOPIFY_API_VERSION = '2024-01';
 export async function shopifyFetch<T>({
   query,
   variables,
-  cache = 'force-cache',
-  revalidate,
+  revalidate = 30,
+  cache,
 }: {
   query: string;
   variables?: Record<string, unknown>;
-  cache?: RequestCache;
   revalidate?: number;
+  cache?: RequestCache;
 }): Promise<T> {
   const domain = process.env.SHOPIFY_STORE_DOMAIN;
   const token = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
@@ -42,8 +42,10 @@ export async function shopifyFetch<T>({
 
   if (revalidate !== undefined) {
     fetchOptions.next = { revalidate };
-  } else {
+  } else if (cache) {
     fetchOptions.cache = cache;
+  } else {
+    fetchOptions.next = { revalidate: 30 };
   }
 
   const res = await fetch(endpoint, fetchOptions);
