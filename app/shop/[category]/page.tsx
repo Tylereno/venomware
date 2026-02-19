@@ -39,7 +39,7 @@ export async function generateMetadata({ params }: ShopPageProps) {
   }
 
   return {
-    title: `${categoryTitles[cat]} | VenomWare`,
+    title: `${categoryTitles[cat]} | VenomWear`,
     description: categoryDescriptions[cat],
   };
 }
@@ -60,13 +60,13 @@ export default async function ShopPage({ params }: ShopPageProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Page Header */}
         <div className="text-center mb-12 space-y-4">
-          <h1 className="text-5xl md:text-6xl font-montserrat font-black tracking-tight">
+          <h1 className="text-5xl md:text-6xl font-montserrat font-black tracking-tight glow-rose">
             {categoryTitles[cat]}
           </h1>
           <p className="text-xl text-white/60 font-inter max-w-2xl mx-auto">
             {categoryDescriptions[cat]}
           </p>
-          <div className="h-1 w-24 bg-white mx-auto" />
+          <div className="shimmer-divider w-40 mx-auto" />
         </div>
 
         {/* Products Grid */}

@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: ProductPageProps) {
   }
 
   return {
-    title: `${product.name} - ${product.variant} | VenomWare`,
+    title: `${product.name} - ${product.variant} | VenomWear`,
     description: product.description,
   };
 }
@@ -50,7 +50,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             {product.images.map((image, index) => (
               <div
                 key={index}
-                className="relative aspect-[3/4] border border-white/20 overflow-hidden"
+                className="relative aspect-[3/4] border border-roseGold/20 overflow-hidden"
               >
                 <Image
                   src={image}
@@ -67,7 +67,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           {/* Product Info */}
           <div className="space-y-8">
             <div>
-              <h1 className="text-5xl font-montserrat font-black tracking-tight mb-2">
+              <h1 className="text-5xl font-montserrat font-black tracking-tight mb-2 glow-rose">
                 {product.name}
               </h1>
               <p className="text-2xl text-white/60 font-inter mb-4">
@@ -79,8 +79,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
             </div>
 
             {product.status === 'limited' && (
-              <div className="border border-white/40 px-4 py-3">
-                <p className="text-sm uppercase tracking-wider text-white/80">
+              <div className="border border-roseGold/50 bg-roseGold/[0.05] px-4 py-3">
+                <p className="text-sm uppercase tracking-wider text-roseGold">
                   ⚡ Limited Stock Available
                 </p>
               </div>
@@ -92,7 +92,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </p>
             </div>
 
-            <div className="border-t border-white/20 pt-8">
+            <div className="border-t border-roseGold/20 pt-8">
               <AddToCartButton product={product} disabled={isSoldOut} />
               
               {isSoldOut && (
@@ -102,7 +102,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
               )}
             </div>
 
-            <div className="border border-white/20 p-6 space-y-3 text-sm font-inter">
+            <div className="border border-roseGold/20 p-6 space-y-3 text-sm font-inter">
               <h3 className="font-montserrat font-bold text-lg">PRODUCT DETAILS</h3>
               <ul className="space-y-2 text-white/80">
                 <li>• Handcrafted with premium materials</li>

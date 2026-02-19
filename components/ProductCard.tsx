@@ -16,9 +16,7 @@ export function ProductCard({ product }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
 
-  const currentImage = isHovered && product.images[1] 
-    ? product.images[1] 
-    : product.images[0];
+  const currentImage = product.images[0];
 
   const isSoldOut = product.status === 'sold_out';
 
@@ -32,7 +30,7 @@ export function ProductCard({ product }: ProductCardProps) {
   return (
     <Link href={`/product/${product.id}`}>
       <div
-        className="group relative border border-white/20 bg-background overflow-hidden cursor-pointer transition-all hover:border-white/40"
+        className="group relative border border-white/20 bg-background overflow-hidden cursor-pointer transition-all hover:border-roseGold/50 hover:shadow-[0_0_22px_rgba(196,132,142,0.12)]"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -43,7 +41,7 @@ export function ProductCard({ product }: ProductCardProps) {
             alt={`${product.name} - ${product.variant}`}
             fill
             className={`object-cover transition-all duration-500 ${
-              isHovered ? 'scale-105' : 'scale-100 grayscale'
+              isHovered ? 'scale-105' : 'scale-100'
             }`}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
@@ -61,7 +59,7 @@ export function ProductCard({ product }: ProductCardProps) {
           {!isSoldOut && (
             <button
               onClick={handleAddToCart}
-              className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-white text-background px-6 py-3 font-inter font-bold uppercase tracking-wider text-sm flex items-center gap-2 hover:bg-white/90"
+              className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-r from-roseGold to-champagne text-background px-6 py-3 font-inter font-bold uppercase tracking-wider text-sm flex items-center gap-2 hover:opacity-90"
             >
               <ShoppingCart className="w-4 h-4" />
               Add to Cart

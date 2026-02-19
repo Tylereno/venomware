@@ -13,11 +13,11 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="relative min-h-[80vh] flex items-center justify-center border-b border-white/20">
+      <section className="relative min-h-[80vh] flex items-center justify-center border-b border-roseGold/20">
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          <h1 className="text-6xl md:text-8xl lg:text-9xl font-montserrat font-black tracking-tighter leading-none">
+          <h1 className="text-6xl md:text-8xl lg:text-9xl font-montserrat font-black tracking-tighter leading-none glow-rose">
             OWN THE
             <br />
             NIGHT
@@ -30,7 +30,7 @@ export default async function HomePage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-8">
             <Link
               href="/shop/exotic"
-              className="group bg-white text-background px-8 py-4 font-montserrat font-black text-lg tracking-wider hover:bg-white/90 transition-all flex items-center gap-2"
+              className="group bg-gradient-to-r from-roseGold to-champagne text-background px-8 py-4 font-montserrat font-black text-lg tracking-wider hover:opacity-90 transition-all flex items-center gap-2 shadow-[0_0_22px_rgba(196,132,142,0.35)]"
             >
               SHOP EXOTIC
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -38,7 +38,7 @@ export default async function HomePage() {
             
             <Link
               href="/custom"
-              className="group border-2 border-white px-8 py-4 font-montserrat font-black text-lg tracking-wider hover:bg-white hover:text-background transition-all flex items-center gap-2"
+              className="group border-2 border-roseGold/60 text-roseGold px-8 py-4 font-montserrat font-black text-lg tracking-wider hover:bg-roseGold hover:text-background transition-all flex items-center gap-2"
             >
               CUSTOM ORDER
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -48,8 +48,8 @@ export default async function HomePage() {
 
         {/* Decorative Elements */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl" />
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-roseGold/8 rounded-full blur-3xl" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-champagne/6 rounded-full blur-3xl" />
         </div>
       </section>
 
@@ -57,7 +57,7 @@ export default async function HomePage() {
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-montserrat font-black tracking-tight mb-4">
+            <h2 className="text-4xl md:text-5xl font-montserrat font-black tracking-tight mb-4 glow-rose">
               FEATURED PIECES
             </h2>
             <p className="text-white/60 text-lg font-inter">
@@ -74,7 +74,7 @@ export default async function HomePage() {
           <div className="text-center mt-12">
             <Link
               href="/shop/exotic"
-              className="inline-block border-2 border-white px-8 py-4 font-montserrat font-black text-lg tracking-wider hover:bg-white hover:text-background transition-all"
+              className="inline-block border-2 border-roseGold/60 text-roseGold px-8 py-4 font-montserrat font-black text-lg tracking-wider hover:bg-roseGold hover:text-background transition-all"
             >
               VIEW ALL PRODUCTS
             </Link>
@@ -83,10 +83,10 @@ export default async function HomePage() {
       </section>
 
       {/* Categories Section */}
-      <section className="py-20 border-t border-white/20 bg-white/5">
+      <section className="py-20 border-t border-roseGold/20 bg-roseGold/[0.03]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
-            <h2 className="text-4xl md:text-5xl font-montserrat font-black tracking-tight">
+            <h2 className="text-4xl md:text-5xl font-montserrat font-black tracking-tight glow-champagne">
               SHOP BY CATEGORY
             </h2>
           </div>
@@ -100,7 +100,7 @@ export default async function HomePage() {
               <Link
                 key={category.href}
                 href={category.href}
-                className="group border border-white/20 p-8 hover:border-white/40 transition-all hover:bg-white/5"
+                className="group border border-roseGold/25 p-8 hover:border-roseGold/55 hover:shadow-[0_0_20px_rgba(196,132,142,0.1)] transition-all hover:bg-roseGold/[0.04]"
               >
                 <h3 className="text-2xl font-montserrat font-black mb-2">
                   {category.title}
@@ -108,7 +108,7 @@ export default async function HomePage() {
                 <p className="text-white/60 font-inter mb-4">
                   {category.desc}
                 </p>
-                <div className="flex items-center gap-2 text-sm font-inter uppercase tracking-wider group-hover:gap-3 transition-all">
+                <div className="flex items-center gap-2 text-sm font-inter uppercase tracking-wider text-roseGold/80 group-hover:gap-3 transition-all">
                   Shop Now <ArrowRight className="w-4 h-4" />
                 </div>
               </Link>
@@ -120,8 +120,8 @@ export default async function HomePage() {
       {/* Custom Orders CTA */}
       <section className="py-20">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="border-2 border-white/20 p-12 space-y-6">
-            <h2 className="text-4xl md:text-5xl font-montserrat font-black tracking-tight">
+          <div className="border-2 border-roseGold/30 p-12 space-y-6 shadow-[0_0_40px_rgba(196,132,142,0.08)]">
+            <h2 className="text-4xl md:text-5xl font-montserrat font-black tracking-tight glow-rose">
               CUSTOM COMMISSIONS
             </h2>
             <p className="text-xl text-white/60 font-inter max-w-2xl mx-auto">
@@ -130,7 +130,7 @@ export default async function HomePage() {
             </p>
             <Link
               href="/custom"
-              className="inline-block bg-white text-background px-8 py-4 font-montserrat font-black text-lg tracking-wider hover:bg-white/90 transition-all"
+              className="inline-block bg-gradient-to-r from-roseGold to-champagne text-background px-8 py-4 font-montserrat font-black text-lg tracking-wider hover:opacity-90 transition-all shadow-[0_0_22px_rgba(196,132,142,0.35)]"
             >
               START YOUR CUSTOM ORDER
             </Link>

@@ -25,7 +25,7 @@ export function AddToCartButton({ product, disabled }: AddToCartButtonProps) {
       className={`w-full py-4 font-montserrat font-black text-lg tracking-wider flex items-center justify-center gap-3 transition-all ${
         disabled
           ? 'bg-white/20 text-white/40 cursor-not-allowed'
-          : 'bg-white text-background hover:bg-white/90'
+          : 'bg-gradient-to-r from-roseGold to-champagne text-background hover:opacity-90 shadow-[0_0_22px_rgba(196,132,142,0.35)]'
       }`}
     >
       <ShoppingCart className="w-5 h-5" />

@@ -11,6 +11,8 @@ const config: Config = {
       colors: {
         background: "#050505",
         foreground: "#ffffff",
+        roseGold: "#c4848e",
+        champagne: "#d4af87",
       },
       fontFamily: {
         montserrat: ['var(--font-montserrat)', 'sans-serif'],

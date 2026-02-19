@@ -6,6 +6,8 @@ import { createCheckout } from '@/lib/actions';
 import { X, Trash2, Plus, Minus, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { addOrderHistory } from '@/lib/orderHistory';
 
 export function CartDrawer() {
   const { 
@@ -19,6 +21,7 @@ export function CartDrawer() {
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const { data: session } = useSession();
 
   const handleCheckout = async () => {
     setCheckoutError(null);
@@ -39,6 +42,24 @@ export function CartDrawer() {
         quantity: item.quantity,
       }));
       const checkoutUrl = await createCheckout(lineItems);
+
+      if (session?.user?.email) {
+        addOrderHistory(session.user.email, {
+          id: crypto.randomUUID(),
+          createdAt: new Date().toISOString(),
+          total,
+          checkoutUrl,
+          items: items.map((item) => ({
+            id: item.id,
+            name: item.name,
+            variant: item.variant,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.images[0],
+          })),
+        });
+      }
+
       window.location.href = checkoutUrl;
     } catch (err) {
       setCheckoutError(
@@ -91,7 +112,7 @@ export function CartDrawer() {
                     src={item.images[0]}
                     alt={item.name}
                     fill
-                    className="object-cover grayscale"
+                    className="object-cover"
                   />
                 </div>
 
@@ -166,7 +187,9 @@ export function CartDrawer() {
               )}
             </button>
             <p className="text-xs text-center text-white/60 font-inter">
-              Secure checkout powered by Shopify
+              {session?.user?.email
+                ? 'Secure checkout powered by Shopify • This checkout will be saved to your account history'
+                : 'Secure checkout powered by Shopify • Sign in to track checkout history'}
             </p>
           </div>
         )}

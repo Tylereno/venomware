@@ -5,6 +5,12 @@
 @layer base {
   body {
     @apply bg-background text-foreground;
+    background:
+      radial-gradient(ellipse 80% 55% at 15% 0%, rgba(90, 22, 44, 0.55) 0%, transparent 55%),
+      radial-gradient(ellipse 60% 45% at 85% 100%, rgba(100, 50, 20, 0.32) 0%, transparent 55%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(60, 15, 30, 0.2) 0%, transparent 65%),
+      #050505;
+    background-attachment: fixed;
   }
 }
 
@@ -12,5 +18,29 @@
   .backdrop-blur-glass {
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
+  }
+
+  .glow-rose {
+    text-shadow:
+      0 0 25px rgba(196, 132, 142, 0.55),
+      0 0 55px rgba(196, 132, 142, 0.22);
+  }
+
+  .glow-champagne {
+    text-shadow:
+      0 0 25px rgba(212, 175, 135, 0.55),
+      0 0 55px rgba(212, 175, 135, 0.22);
+  }
+
+  .shimmer-divider {
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(196, 132, 142, 0.5) 30%,
+      rgba(212, 175, 135, 0.6) 50%,
+      rgba(196, 132, 142, 0.5) 70%,
+      transparent
+    );
   }
 }
