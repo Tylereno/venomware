@@ -15,18 +15,14 @@ export interface OrderHistoryEntry {
   items: OrderHistoryItem[];
 }
 
-const ORDER_HISTORY_KEY_PREFIX = 'venomwear_order_history_';
+const ORDER_HISTORY_KEY = 'venomwear_recent_checkouts';
 
-function getStorageKey(email: string) {
-  return `${ORDER_HISTORY_KEY_PREFIX}${email.trim().toLowerCase()}`;
-}
-
-export function getOrderHistory(email: string): OrderHistoryEntry[] {
-  if (typeof window === 'undefined' || !email) {
+export function getOrderHistory(): OrderHistoryEntry[] {
+  if (typeof window === 'undefined') {
     return [];
   }
 
-  const raw = localStorage.getItem(getStorageKey(email));
+  const raw = localStorage.getItem(ORDER_HISTORY_KEY);
   if (!raw) {
     return [];
   }
@@ -42,12 +38,12 @@ export function getOrderHistory(email: string): OrderHistoryEntry[] {
   }
 }
 
-export function addOrderHistory(email: string, entry: OrderHistoryEntry) {
-  if (typeof window === 'undefined' || !email) {
+export function addOrderHistory(entry: OrderHistoryEntry) {
+  if (typeof window === 'undefined') {
     return;
   }
 
-  const current = getOrderHistory(email);
+  const current = getOrderHistory();
   const updated = [entry, ...current].slice(0, 50);
-  localStorage.setItem(getStorageKey(email), JSON.stringify(updated));
+  localStorage.setItem(ORDER_HISTORY_KEY, JSON.stringify(updated));
 }

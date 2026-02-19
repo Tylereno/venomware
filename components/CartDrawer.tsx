@@ -7,12 +7,8 @@ import { X, Trash2, Plus, Minus, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { addOrderHistory } from '@/lib/orderHistory';
-import {
-  getSavedCheckoutEmail,
-  isNewsletterSubscriber,
-  saveCheckoutEmail,
-  subscribeToNewsletter,
-} from '@/lib/customerPrefs';
+import { getSavedCheckoutEmail, saveCheckoutEmail } from '@/lib/customerPrefs';
+import Link from 'next/link';
 
 export function CartDrawer() {
   const { 
@@ -27,12 +23,10 @@ export function CartDrawer() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [customerEmail, setCustomerEmail] = useState('');
-  const [newsletterOptIn, setNewsletterOptIn] = useState(false);
 
   useEffect(() => {
     const email = getSavedCheckoutEmail();
     setCustomerEmail(email);
-    setNewsletterOptIn(isNewsletterSubscriber(email));
   }, []);
 
   const handleCheckout = async () => {
@@ -63,7 +57,7 @@ export function CartDrawer() {
       }));
       const checkoutUrl = await createCheckout(lineItems);
 
-      addOrderHistory(normalizedEmail, {
+      addOrderHistory({
         id: crypto.randomUUID(),
         createdAt: new Date().toISOString(),
         total,
@@ -77,10 +71,6 @@ export function CartDrawer() {
           image: item.images[0],
         })),
       });
-
-      if (newsletterOptIn) {
-        subscribeToNewsletter(normalizedEmail);
-      }
 
       window.location.href = checkoutUrl;
     } catch (err) {
@@ -202,15 +192,14 @@ export function CartDrawer() {
                 placeholder="Email for order updates & history"
                 className="w-full bg-background/70 border border-roseGold/25 px-4 py-3 font-inter text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-roseGold/60"
               />
-              <label className="flex items-start gap-2 text-xs text-white/70 font-inter">
-                <input
-                  type="checkbox"
-                  checked={newsletterOptIn}
-                  onChange={(event) => setNewsletterOptIn(event.target.checked)}
-                  className="mt-0.5 accent-roseGold"
-                />
-                Sign me up for VenomWear product drops, offers, and newsletter updates
-              </label>
+              <a
+                href="https://instagram.com/venomwear"
+                target="_blank"
+                rel="noreferrer noopener"
+                className="inline-block text-xs text-champagne hover:text-roseGold transition-colors font-inter"
+              >
+                Keep up with new drops on Instagram ↗
+              </a>
             </div>
             <button
               onClick={handleCheckout}
@@ -227,8 +216,14 @@ export function CartDrawer() {
               )}
             </button>
             <p className="text-xs text-center text-white/60 font-inter">
-              Secure checkout powered by Shopify • History is saved by email on this device
+              Secure checkout powered by Shopify
             </p>
+            <Link
+              href="/account"
+              className="block text-center text-xs text-roseGold hover:text-champagne transition-colors font-inter"
+            >
+              View recent checkouts
+            </Link>
           </div>
         )}
       </div>
