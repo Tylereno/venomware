@@ -1,26 +1,43 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { signOut, useSession } from 'next-auth/react';
 import { getOrderHistory, type OrderHistoryEntry } from '@/lib/orderHistory';
 import { formatPrice } from '@/lib/utils';
+import { getSavedCheckoutEmail, saveCheckoutEmail } from '@/lib/customerPrefs';
 
 export default function AccountPage() {
   const { data: session, status } = useSession();
   const [history, setHistory] = useState<OrderHistoryEntry[]>([]);
+  const [lookupEmail, setLookupEmail] = useState('');
+  const [activeEmail, setActiveEmail] = useState('');
 
   const userEmail = session?.user?.email ?? '';
 
   useEffect(() => {
-    if (!userEmail) {
-      setHistory([]);
+    if (userEmail) {
+      const normalized = userEmail.trim().toLowerCase();
+      setLookupEmail(normalized);
+      setActiveEmail(normalized);
+      setHistory(getOrderHistory(normalized));
       return;
     }
 
-    setHistory(getOrderHistory(userEmail));
+    const savedEmail = getSavedCheckoutEmail();
+    setLookupEmail(savedEmail);
+    setActiveEmail(savedEmail);
+    setHistory(getOrderHistory(savedEmail));
   }, [userEmail]);
+
+  const handleLookup = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const normalizedEmail = lookupEmail.trim().toLowerCase();
+    setActiveEmail(normalizedEmail);
+    saveCheckoutEmail(normalizedEmail);
+    setHistory(getOrderHistory(normalizedEmail));
+  };
 
   const totalSpent = useMemo(
     () => history.reduce((sum, order) => sum + order.total, 0),
@@ -30,24 +47,7 @@ export default function AccountPage() {
   if (status === 'loading') {
     return (
       <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center text-white/70 font-inter">Loading account...</div>
-      </div>
-    );
-  }
-
-  if (!session) {
-    return (
-      <div className="min-h-screen py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-xl mx-auto border border-roseGold/25 p-8 text-center space-y-4">
-          <h1 className="text-4xl font-montserrat font-black tracking-tight glow-rose">MY PROFILE</h1>
-          <p className="text-white/70 font-inter">Please sign in to view your profile and shopping history.</p>
-          <Link
-            href="/login"
-            className="inline-block py-3 px-6 bg-gradient-to-r from-roseGold to-champagne text-background font-montserrat font-bold tracking-wide hover:opacity-90 transition-opacity"
-          >
-            Go to login
-          </Link>
-        </div>
+        <div className="max-w-4xl mx-auto text-center text-white/70 font-inter">Loading history...</div>
       </div>
     );
   }
@@ -55,10 +55,10 @@ export default function AccountPage() {
   return (
     <div className="min-h-screen py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto space-y-8">
-        <section className="border border-roseGold/25 p-6 md:p-8 bg-background/60 backdrop-blur-glass">
+        <section className="border border-roseGold/25 p-6 md:p-8 bg-background/60 backdrop-blur-glass space-y-5">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-5 justify-between">
             <div className="flex items-center gap-4">
-              {session.user?.image ? (
+              {session?.user?.image ? (
                 <Image
                   src={session.user.image}
                   alt={session.user?.name ?? 'Profile image'}
@@ -68,22 +68,50 @@ export default function AccountPage() {
                 />
               ) : (
                 <div className="w-[72px] h-[72px] rounded-full border border-roseGold/40 flex items-center justify-center text-xl font-montserrat font-black text-roseGold">
-                  {(session.user?.name?.[0] ?? 'V').toUpperCase()}
+                  {(activeEmail?.[0] ?? 'V').toUpperCase()}
                 </div>
               )}
               <div>
-                <h1 className="text-4xl font-montserrat font-black tracking-tight glow-rose">MY PROFILE</h1>
-                <p className="text-lg text-white/80 font-inter">{session.user?.name ?? 'VenomWear Client'}</p>
-                <p className="text-sm text-white/60 font-inter">{session.user?.email}</p>
+                <h1 className="text-4xl font-montserrat font-black tracking-tight glow-rose">ORDER HISTORY</h1>
+                <p className="text-lg text-white/80 font-inter">
+                  {session?.user?.name ?? 'Lookup by checkout email'}
+                </p>
+                <p className="text-sm text-white/60 font-inter">
+                  {activeEmail || 'Enter your checkout email below'}
+                </p>
               </div>
             </div>
-            <button
-              onClick={() => signOut({ callbackUrl: '/' })}
-              className="px-5 py-2 border border-roseGold/60 text-roseGold font-montserrat font-bold tracking-wide hover:bg-roseGold hover:text-background transition-colors"
-            >
-              Sign out
-            </button>
+
+            {session && (
+              <button
+                onClick={() => signOut({ callbackUrl: '/' })}
+                className="px-5 py-2 border border-roseGold/60 text-roseGold font-montserrat font-bold tracking-wide hover:bg-roseGold hover:text-background transition-colors"
+              >
+                Sign out
+              </button>
+            )}
           </div>
+
+          <form onSubmit={handleLookup} className="space-y-3">
+            <label className="block text-xs uppercase tracking-wider text-white/60">
+              Lookup by checkout email
+            </label>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="email"
+                value={lookupEmail}
+                onChange={(event) => setLookupEmail(event.target.value)}
+                placeholder="you@example.com"
+                className="flex-1 bg-background/70 border border-roseGold/25 px-4 py-3 font-inter text-white placeholder:text-white/40 focus:outline-none focus:border-roseGold/60"
+              />
+              <button
+                type="submit"
+                className="px-6 py-3 bg-gradient-to-r from-roseGold to-champagne text-background font-montserrat font-bold tracking-wide hover:opacity-90 transition-opacity"
+              >
+                Load history
+              </button>
+            </div>
+          </form>
         </section>
 
         <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -102,7 +130,7 @@ export default function AccountPage() {
 
           {history.length === 0 ? (
             <div className="border border-roseGold/20 p-6 text-white/70 font-inter">
-              No checkout history yet. Add items to cart and checkout to build your history.
+              No checkout history found for this email on this device yet.
             </div>
           ) : (
             history.map((order) => (

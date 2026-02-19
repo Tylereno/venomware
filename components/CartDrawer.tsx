@@ -5,9 +5,14 @@ import { formatPrice } from '@/lib/utils';
 import { createCheckout } from '@/lib/actions';
 import { X, Trash2, Plus, Minus, Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useEffect, useState } from 'react';
 import { addOrderHistory } from '@/lib/orderHistory';
+import {
+  getSavedCheckoutEmail,
+  isNewsletterSubscriber,
+  saveCheckoutEmail,
+  subscribeToNewsletter,
+} from '@/lib/customerPrefs';
 
 export function CartDrawer() {
   const { 
@@ -21,10 +26,23 @@ export function CartDrawer() {
 
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
-  const { data: session } = useSession();
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [newsletterOptIn, setNewsletterOptIn] = useState(false);
+
+  useEffect(() => {
+    const email = getSavedCheckoutEmail();
+    setCustomerEmail(email);
+    setNewsletterOptIn(isNewsletterSubscriber(email));
+  }, []);
 
   const handleCheckout = async () => {
     setCheckoutError(null);
+
+    const normalizedEmail = customerEmail.trim().toLowerCase();
+    if (!normalizedEmail || !normalizedEmail.includes('@')) {
+      setCheckoutError('Enter a valid email to save order history and receive updates.');
+      return;
+    }
 
     // Ensure every item has a Shopify variant ID before proceeding
     const missingVariant = items.find((item) => !item.shopifyVariantId);
@@ -37,27 +55,31 @@ export function CartDrawer() {
 
     setIsCheckingOut(true);
     try {
+      saveCheckoutEmail(normalizedEmail);
+
       const lineItems = items.map((item) => ({
         merchandiseId: item.shopifyVariantId,
         quantity: item.quantity,
       }));
       const checkoutUrl = await createCheckout(lineItems);
 
-      if (session?.user?.email) {
-        addOrderHistory(session.user.email, {
-          id: crypto.randomUUID(),
-          createdAt: new Date().toISOString(),
-          total,
-          checkoutUrl,
-          items: items.map((item) => ({
-            id: item.id,
-            name: item.name,
-            variant: item.variant,
-            price: item.price,
-            quantity: item.quantity,
-            image: item.images[0],
-          })),
-        });
+      addOrderHistory(normalizedEmail, {
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+        total,
+        checkoutUrl,
+        items: items.map((item) => ({
+          id: item.id,
+          name: item.name,
+          variant: item.variant,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.images[0],
+        })),
+      });
+
+      if (newsletterOptIn) {
+        subscribeToNewsletter(normalizedEmail);
       }
 
       window.location.href = checkoutUrl;
@@ -172,6 +194,24 @@ export function CartDrawer() {
                 {checkoutError}
               </p>
             )}
+            <div className="space-y-3">
+              <input
+                type="email"
+                value={customerEmail}
+                onChange={(event) => setCustomerEmail(event.target.value)}
+                placeholder="Email for order updates & history"
+                className="w-full bg-background/70 border border-roseGold/25 px-4 py-3 font-inter text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-roseGold/60"
+              />
+              <label className="flex items-start gap-2 text-xs text-white/70 font-inter">
+                <input
+                  type="checkbox"
+                  checked={newsletterOptIn}
+                  onChange={(event) => setNewsletterOptIn(event.target.checked)}
+                  className="mt-0.5 accent-roseGold"
+                />
+                Sign me up for VenomWear product drops, offers, and newsletter updates
+              </label>
+            </div>
             <button
               onClick={handleCheckout}
               disabled={isCheckingOut}
@@ -187,9 +227,7 @@ export function CartDrawer() {
               )}
             </button>
             <p className="text-xs text-center text-white/60 font-inter">
-              {session?.user?.email
-                ? 'Secure checkout powered by Shopify • This checkout will be saved to your account history'
-                : 'Secure checkout powered by Shopify • Sign in to track checkout history'}
+              Secure checkout powered by Shopify • History is saved by email on this device
             </p>
           </div>
         )}
