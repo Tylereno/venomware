@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Send, CheckCircle } from 'lucide-react';
+import { submitCustomOrderRequest } from '@/lib/actions';
 
 type CustomOrderForm = {
   name: string;
@@ -13,6 +14,7 @@ type CustomOrderForm = {
 
 export default function CustomOrderPage() {
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const {
     register,
     handleSubmit,
@@ -21,17 +23,20 @@ export default function CustomOrderPage() {
   } = useForm<CustomOrderForm>();
 
   const onSubmit = async (data: CustomOrderForm) => {
-    // TODO: Integrate with email service or backend API
-    console.log('Custom Order Submission:', data);
-    
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    
-    setIsSubmitted(true);
-    reset();
-    
-    // Reset success message after 5 seconds
-    setTimeout(() => setIsSubmitted(false), 5000);
+    setSubmitError(null);
+
+    try {
+      await submitCustomOrderRequest(data);
+      setIsSubmitted(true);
+      reset();
+      setTimeout(() => setIsSubmitted(false), 5000);
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error
+          ? error.message
+          : 'Unable to submit right now. Please try again shortly.'
+      );
+    }
   };
 
   return (
@@ -173,6 +178,9 @@ export default function CustomOrderPage() {
               </>
             )}
           </button>
+          {submitError && (
+            <p className="text-sm text-red-400 text-center font-inter">{submitError}</p>
+          )}
         </form>
 
         {/* Success Message */}

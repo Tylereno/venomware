@@ -5,10 +5,18 @@ import {
   CREATE_CART_MUTATION,
   type CreateCartResponse,
 } from './shopify';
+import { Resend } from 'resend';
 
 export interface CheckoutLineItem {
   merchandiseId: string; // Shopify variant GID
   quantity: number;
+}
+
+export interface CustomOrderRequestData {
+  name: string;
+  email: string;
+  phone?: string;
+  vision: string;
 }
 
 /**
@@ -40,4 +48,73 @@ export async function createCheckout(
   }
 
   return cart.checkoutUrl;
+}
+
+export async function submitCustomOrderRequest(
+  data: CustomOrderRequestData
+): Promise<{ success: true }> {
+  const name = data.name.trim();
+  const email = data.email.trim();
+  const phone = (data.phone ?? '').trim();
+  const vision = data.vision.trim();
+
+  if (!name || !email || !vision) {
+    throw new Error('Please fill out all required fields.');
+  }
+
+  if (vision.length < 20) {
+    throw new Error('Please provide more detail in your request.');
+  }
+
+  const resendApiKey = process.env.RESEND_API_KEY;
+  const toEmail = process.env.CUSTOM_ORDER_TO_EMAIL;
+
+  if (!resendApiKey) {
+    throw new Error('Missing RESEND_API_KEY on server.');
+  }
+
+  if (!toEmail) {
+    throw new Error('Missing CUSTOM_ORDER_TO_EMAIL on server.');
+  }
+
+  const resend = new Resend(resendApiKey);
+  const fromEmail = process.env.CUSTOM_ORDER_FROM_EMAIL || 'VenomWear <orders@shopvenomwear.com>';
+
+  const safeVision = vision
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/\n/g, '<br/>');
+
+  const subject = `New Custom Order Request — ${name}`;
+
+  const { error } = await resend.emails.send({
+    from: fromEmail,
+    to: [toEmail],
+    replyTo: email,
+    subject,
+    text: [
+      'New custom order request',
+      `Name: ${name}`,
+      `Email: ${email}`,
+      `Phone: ${phone || 'Not provided'}`,
+      '',
+      'Vision:',
+      vision,
+    ].join('\n'),
+    html: `
+      <h2>New Custom Order Request</h2>
+      <p><strong>Name:</strong> ${name}</p>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
+      <p><strong>Vision:</strong></p>
+      <p>${safeVision}</p>
+    `,
+  });
+
+  if (error) {
+    throw new Error('Unable to send your request right now. Please try again shortly.');
+  }
+
+  return { success: true };
 }
