@@ -1,14 +1,12 @@
 import Link from 'next/link';
 import { ProductCard } from '@/components/ProductCard';
-import { getAllProducts } from '@/lib/data';
+import { getFeaturedProducts } from '@/lib/data';
 import { ArrowRight } from 'lucide-react';
 
 export const revalidate = 60; // ISR: revalidate every 60 seconds
 
 export default async function HomePage() {
-  const products = await getAllProducts();
-  // Get featured products (first 6)
-  const featuredProducts = products.slice(0, 6);
+  const featuredProducts = await getFeaturedProducts(6);
 
   return (
     <div className="min-h-screen">

@@ -16,6 +16,7 @@ export type ProductStatus = 'available' | 'sold_out' | 'limited';
 
 export interface Product {
   id: string;          // Shopify product handle (slug)
+  createdAt?: string;
   name: string;
   variant: string;
   price: number;
@@ -57,6 +58,7 @@ function mapShopifyProduct(p: ShopifyProduct): Product {
 
   return {
     id: p.handle,
+    createdAt: p.createdAt,
     name: p.title,
     variant: variant?.title === 'Default Title' ? p.productType : (variant?.title ?? ''),
     price: parseFloat(variant?.price.amount ?? '0'),
@@ -66,9 +68,22 @@ function mapShopifyProduct(p: ShopifyProduct): Product {
       variant?.quantityAvailable ?? null
     ),
     description: p.description,
-    images: images.length >= 2 ? images : [images[0] ?? '', images[0] ?? ''],
+    images: images.length > 0 ? images : [''],
     shopifyVariantId: variant?.id ?? '',
   };
+}
+
+function sortProductsNewestFirst(products: Product[]): Product[] {
+  if (products.some((product) => !!product.createdAt)) {
+    return [...products].sort((a, b) => {
+      const aTime = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+      const bTime = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+      return bTime - aTime;
+    });
+  }
+
+  // Static fallback data has no timestamps; assume new items are appended later.
+  return [...products].reverse();
 }
 
 // ---------------------------------------------------------------------------
@@ -85,11 +100,11 @@ function shopifyConfigured(): boolean {
 
 /** Fetch every product from Shopify */
 export async function getAllProducts(): Promise<Product[]> {
-  if (!shopifyConfigured()) return staticProducts;
+  if (!shopifyConfigured()) return sortProductsNewestFirst(staticProducts);
 
   const data = await shopifyFetch<GetAllProductsResponse>({
     query: GET_ALL_PRODUCTS_QUERY,
-    variables: { first: 100 },
+    variables: { first: 100, sortKey: 'CREATED_AT', reverse: true },
     revalidate: 60,
   });
 
@@ -101,7 +116,9 @@ export async function getProductsByCategory(
   category: ProductCategory
 ): Promise<Product[]> {
   if (!shopifyConfigured()) {
-    return staticProducts.filter((p) => p.category === category);
+    return sortProductsNewestFirst(
+      staticProducts.filter((p) => p.category === category)
+    );
   }
 
   // Reverse-lookup the Shopify productType string for this category
@@ -110,7 +127,12 @@ export async function getProductsByCategory(
 
   const data = await shopifyFetch<GetProductsByTypeResponse>({
     query: GET_PRODUCTS_BY_TYPE_QUERY,
-    variables: { queryStr: `product_type:"${productType}"`, first: 50 },
+    variables: {
+      queryStr: `product_type:"${productType}"`,
+      first: 50,
+      sortKey: 'CREATED_AT',
+      reverse: true,
+    },
     revalidate: 60,
   });
 
@@ -143,11 +165,31 @@ export async function getAllProductHandles(): Promise<string[]> {
 
   const data = await shopifyFetch<GetAllHandlesResponse>({
     query: GET_ALL_HANDLES_QUERY,
-    variables: { first: 250 },
+    variables: { first: 250, sortKey: 'CREATED_AT', reverse: true },
     cache: 'force-cache',
   });
 
   return data.products.edges.map((e) => e.node.handle);
+}
+
+export async function getFeaturedProducts(limit = 6): Promise<Product[]> {
+  const products = await getAllProducts();
+
+  const configuredFeaturedHandles = (process.env.FEATURED_PRODUCT_HANDLES ?? '')
+    .split(',')
+    .map((handle) => handle.trim())
+    .filter(Boolean);
+
+  if (configuredFeaturedHandles.length === 0) {
+    return products.slice(0, limit);
+  }
+
+  const productsByHandle = new Map(products.map((product) => [product.id, product]));
+  const selected = configuredFeaturedHandles
+    .map((handle) => productsByHandle.get(handle))
+    .filter((product): product is Product => !!product);
+
+  return (selected.length > 0 ? selected : products).slice(0, limit);
 }
 
 // ---------------------------------------------------------------------------

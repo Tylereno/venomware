@@ -71,11 +71,12 @@ const PRODUCT_FRAGMENT = /* GraphQL */ `
   fragment ProductFragment on Product {
     id
     handle
+    createdAt
     title
     productType
     description
     tags
-    images(first: 2) {
+    images(first: 20) {
       edges {
         node {
           url
@@ -102,8 +103,8 @@ const PRODUCT_FRAGMENT = /* GraphQL */ `
 
 export const GET_ALL_PRODUCTS_QUERY = /* GraphQL */ `
   ${PRODUCT_FRAGMENT}
-  query GetAllProducts($first: Int!) {
-    products(first: $first) {
+  query GetAllProducts($first: Int!, $sortKey: ProductSortKeys, $reverse: Boolean) {
+    products(first: $first, sortKey: $sortKey, reverse: $reverse) {
       edges {
         node {
           ...ProductFragment
@@ -124,8 +125,8 @@ export const GET_PRODUCT_BY_HANDLE_QUERY = /* GraphQL */ `
 
 export const GET_PRODUCTS_BY_TYPE_QUERY = /* GraphQL */ `
   ${PRODUCT_FRAGMENT}
-  query GetProductsByType($queryStr: String!, $first: Int!) {
-    products(query: $queryStr, first: $first) {
+  query GetProductsByType($queryStr: String!, $first: Int!, $sortKey: ProductSortKeys, $reverse: Boolean) {
+    products(query: $queryStr, first: $first, sortKey: $sortKey, reverse: $reverse) {
       edges {
         node {
           ...ProductFragment
@@ -136,8 +137,8 @@ export const GET_PRODUCTS_BY_TYPE_QUERY = /* GraphQL */ `
 `;
 
 export const GET_ALL_HANDLES_QUERY = /* GraphQL */ `
-  query GetAllHandles($first: Int!) {
-    products(first: $first) {
+  query GetAllHandles($first: Int!, $sortKey: ProductSortKeys, $reverse: Boolean) {
+    products(first: $first, sortKey: $sortKey, reverse: $reverse) {
       edges {
         node {
           handle
@@ -177,6 +178,7 @@ export interface ShopifyProductVariant {
 export interface ShopifyProduct {
   id: string;
   handle: string;
+  createdAt: string;
   title: string;
   productType: string;
   description: string;
