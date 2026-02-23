@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { ShoppingCart, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { useCartStore } from '@/lib/store';
@@ -25,9 +26,14 @@ export function Navbar() {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <h1 className="text-2xl font-montserrat font-black tracking-tight glow-rose">
-                VENOMWEAR
-              </h1>
+              <Image
+                src="/images/venomwear-logo.jpg"
+                alt="VenomWear"
+                width={300}
+                height={120}
+                priority
+                className="h-12 w-auto object-contain"
+              />
             </Link>
 
             {/* Desktop Navigation */}

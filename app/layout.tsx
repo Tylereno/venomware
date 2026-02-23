@@ -1,5 +1,6 @@
 import { Inter, Montserrat } from 'next/font/google';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { Navbar } from '@/components/Navbar';
 import './globals.css';
 
@@ -35,9 +36,13 @@ export default function RootLayout({
         <footer className="border-t border-roseGold/20 py-12 mt-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center space-y-4">
-              <h2 className="text-2xl font-montserrat font-black tracking-tight glow-champagne">
-                VENOMWEAR
-              </h2>
+              <Image
+                src="/images/venomwear-logo.jpg"
+                alt="VenomWear"
+                width={420}
+                height={168}
+                className="h-16 w-auto mx-auto object-contain"
+              />
               <p className="text-white/60 text-sm">
                 Handcrafted with precision. Designed to captivate.
               </p>
