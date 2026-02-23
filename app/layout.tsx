@@ -41,7 +41,7 @@ export default function RootLayout({
                 alt="VenomWear"
                 width={420}
                 height={168}
-                className="h-16 w-auto mx-auto object-contain"
+                className="h-28 w-auto mx-auto object-contain"
               />
               <p className="text-white/60 text-sm">
                 Handcrafted with precision. Designed to captivate.
