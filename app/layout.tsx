@@ -1,6 +1,7 @@
 import { Inter, Montserrat } from 'next/font/google';
 import type { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Navbar } from '@/components/Navbar';
 import './globals.css';
 
@@ -39,13 +40,21 @@ export default function RootLayout({
               <Image
                 src="/images/venomwear-logo-transparent.png"
                 alt="VenomWear"
-                width={560}
-                height={290}
-                className="h-24 w-auto mx-auto object-contain scale-[1.3]"
+                width={1120}
+                height={580}
+                className="h-48 w-auto mx-auto object-contain scale-[1.3]"
               />
               <p className="text-white/60 text-sm">
                 Handcrafted with precision. Designed to captivate.
               </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-6 text-sm font-inter uppercase tracking-wider">
+                <Link href="/support" className="text-white/70 hover:text-white transition-colors">
+                  Support & Alterations
+                </Link>
+                <Link href="/lifetime-repair-guarantee" className="text-white/70 hover:text-white transition-colors">
+                  Lifetime Repair Guarantee
+                </Link>
+              </div>
               <div className="shimmer-divider w-48 mx-auto" />
               <p className="text-white/40 text-xs">
                 © 2026 VenomWear. All rights reserved.

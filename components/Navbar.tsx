@@ -23,14 +23,14 @@ export function Navbar() {
     <>
       <nav className="sticky top-0 z-50 border-b border-roseGold/20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-20">
+          <div className="flex items-center justify-between h-32">
             {/* Logo */}
-            <Link href="/" className="flex items-center h-14 w-[210px] overflow-hidden">
+            <Link href="/" className="flex items-center h-28 w-[420px] overflow-hidden">
               <Image
                 src="/images/venomwear-logo-transparent.png"
                 alt="VenomWear"
-                width={420}
-                height={220}
+                width={840}
+                height={440}
                 priority
                 className="w-full h-full object-contain scale-[1.7]"
               />
