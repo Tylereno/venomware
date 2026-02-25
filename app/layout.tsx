@@ -37,11 +37,11 @@ export default function RootLayout({
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center space-y-4">
               <Image
-                src="/images/venomwear-logo.jpg"
+                src="/images/venomwear-logo-transparent.png"
                 alt="VenomWear"
-                width={420}
-                height={168}
-                className="h-28 w-auto mx-auto object-contain"
+                width={560}
+                height={290}
+                className="h-24 w-auto mx-auto object-contain scale-[1.3]"
               />
               <p className="text-white/60 text-sm">
                 Handcrafted with precision. Designed to captivate.

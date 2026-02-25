@@ -21,18 +21,18 @@ export function Navbar() {
 
   return (
     <>
-      <nav className="sticky top-0 z-50 border-b border-white/20 backdrop-blur-glass bg-background/80">
+      <nav className="sticky top-0 z-50 border-b border-roseGold/20 bg-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+          <div className="flex items-center justify-between h-20">
             {/* Logo */}
-            <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center h-14 w-[210px] overflow-hidden">
               <Image
-                src="/images/venomwear-logo.jpg"
+                src="/images/venomwear-logo-transparent.png"
                 alt="VenomWear"
-                width={300}
-                height={120}
+                width={420}
+                height={220}
                 priority
-                className="h-20 w-auto object-contain"
+                className="w-full h-full object-contain scale-[1.7]"
               />
             </Link>
 
