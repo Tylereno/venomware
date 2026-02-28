@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Image from 'next/image';
 import { ProductCard } from '@/components/ProductCard';
 import { getFeaturedProducts } from '@/lib/data';
 import { ArrowRight } from 'lucide-react';
@@ -16,16 +15,9 @@ export default async function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background" />
         
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
-          <div className="mx-auto h-[300px] sm:h-[340px] md:h-[380px] lg:h-[420px] w-full max-w-[1200px] overflow-hidden">
-            <Image
-              src="/images/venomwear-logo-transparent.png"
-              alt="VenomWear"
-              width={1800}
-              height={940}
-              priority
-              className="w-full h-full object-contain scale-[3] drop-shadow-[0_0_24px_rgba(196,132,142,0.4)]"
-            />
-          </div>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-montserrat font-black tracking-tight glow-rose">
+            HANDMADE FOR THE MAIN STAGE
+          </h1>
           
           <p className="text-xl md:text-2xl text-white/60 max-w-2xl mx-auto font-inter">
             Handcrafted exotic dancewear and rave outfits designed to make you unforgettable.
